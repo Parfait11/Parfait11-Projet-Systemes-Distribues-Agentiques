@@ -4,6 +4,8 @@ import enset.dimba.ebankservice.entities.BankAccount;
 import enset.dimba.ebankservice.feign.CustomerRestClient;
 import enset.dimba.ebankservice.model.Customer;
 import enset.dimba.ebankservice.repository.BankAccountRepository;
+import org.springframework.ai.mcp.annotation.McpTool;
+import org.springframework.ai.mcp.annotation.McpToolParam;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -22,11 +24,15 @@ public class EBankService {
         this.customerRestClient = customerRestClient;
     }
 
+    @McpTool(description = "Get all Bank accounts")
     public List<BankAccount> getAllBankAccount(){
         return  accountRepository.findAll();
     }
 
-    public BankAccount getBankAccountById(String id){
+
+    @McpTool(description = "Get a bank account by id")
+    public BankAccount getBankAccountById(
+            @McpToolParam(description = "The bank account id") String id){
         BankAccount bankAccount =  accountRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
         bankAccount.setCustomer(
@@ -34,7 +40,9 @@ public class EBankService {
         return bankAccount;
     }
 
-    public BankAccount save(BankAccount bankAccount){
+    @McpTool(description = "Save a new bank Accounts")
+    public BankAccount save(
+            @McpToolParam(description = "The bank account to save(balance,type, customer )") BankAccount bankAccount){
         try{
             Customer customer = customerRestClient.getCustomerById(bankAccount.getCustomerId());
             bankAccount.setId(UUID.randomUUID().toString());

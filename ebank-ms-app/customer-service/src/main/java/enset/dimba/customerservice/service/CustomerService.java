@@ -2,6 +2,8 @@ package enset.dimba.customerservice.service;
 
 import enset.dimba.customerservice.entities.Customer;
 import enset.dimba.customerservice.repository.CustomerRepository;
+import org.springframework.ai.mcp.annotation.McpTool;
+import org.springframework.ai.mcp.annotation.McpToolParam;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,16 +16,19 @@ public class CustomerService {
         this.customerRepository = customerRepository;
     }
 
+    @McpTool(description = "Get All Customers")
     public List<Customer> getAllCustomers(){
         return customerRepository.findAll();
     }
 
-    public Customer findCustomerById(Long id){
+    @McpTool(description = "Find a customers by id")
+    public Customer findCustomerById(@McpToolParam(description = "The customer id") Long id){
         return customerRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Customer Not Found"));
     }
 
-    public  Customer saveCustomer(Customer customer){
+    @McpTool(description = "Save a new customers")
+    public  Customer saveCustomer(@McpToolParam(description = "The customer  to save(name, email)") Customer customer){
         return customerRepository.save(customer);
     }
 }
